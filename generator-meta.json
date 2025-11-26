@@ -1,0 +1,79 @@
+{
+  "generator": {
+    "name": "FoundationWizard",
+    "version": "1.0.0",
+    "timestamp": "2025-11-26T15:44:00.149Z"
+  },
+  "project": {
+    "name": "todolist-backend",
+    "description": "Backend for ToDoList mobile app with tasks, reminders, push notifications, priorities, collaboration and offline-sync",
+    "orm": "mongoose"
+  },
+  "dependencies": {
+    "nodejs": "20",
+    "nestjs": "11.0.0"
+  },
+  "features": {
+    "authentication": true,
+    "jwt": true,
+    "rbac": true,
+    "oauth": false,
+    "swagger": true,
+    "logging": true,
+    "caching": true,
+    "rateLimit": true,
+    "health": true,
+    "compression": true,
+    "helmet": true,
+    "docker": true,
+    "cicd": true
+  },
+  "models": [
+    {
+      "name": "User",
+      "fields": 9,
+      "timestamps": true
+    },
+    {
+      "name": "Task",
+      "fields": 19,
+      "timestamps": true
+    },
+    {
+      "name": "Subtask",
+      "fields": 4,
+      "timestamps": true
+    },
+    {
+      "name": "Tag",
+      "fields": 3,
+      "timestamps": true
+    },
+    {
+      "name": "List",
+      "fields": 5,
+      "timestamps": true
+    },
+    {
+      "name": "Device",
+      "fields": 5,
+      "timestamps": true
+    },
+    {
+      "name": "Notification",
+      "fields": 8,
+      "timestamps": true
+    },
+    {
+      "name": "AuditLog",
+      "fields": 6,
+      "timestamps": true
+    },
+    {
+      "name": "SyncCursor",
+      "fields": 3,
+      "timestamps": true
+    }
+  ],
+  "relationships": 10
+}

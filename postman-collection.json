@@ -1,0 +1,507 @@
+{
+  "info": {
+    "name": "todolist-backend API",
+    "description": "Backend for ToDoList mobile app with tasks, reminders, push notifications, priorities, collaboration and offline-sync",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    }  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/health"
+      }
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\\n  \\"email\\": \\"user@example.com\\",\\n  \\"password\\": \\"SecurePass123!\\"\\n}"
+            },
+            "url": "{{baseUrl}}/auth/register"
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\\n  \\"email\\": \\"user@example.com\\",\\n  \\"password\\": \\"SecurePass123!\\"\\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/users"
+          }
+        },
+        {
+          "name": "Get All",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users"
+          }
+        },
+        {
+          "name": "Get By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/users/:id"
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/users/:id"
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/users/:id"
+          }
+        }
+      ]
+    },
+    {
+      "name": "tasks",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/tasks"
+          }
+        },
+        {
+          "name": "Get All",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tasks"
+          }
+        },
+        {
+          "name": "Get By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tasks/:id"
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/tasks/:id"
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/tasks/:id"
+          }
+        }
+      ]
+    },
+    {
+      "name": "subtasks",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/subtasks"
+          }
+        },
+        {
+          "name": "Get All",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/subtasks"
+          }
+        },
+        {
+          "name": "Get By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/subtasks/:id"
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/subtasks/:id"
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/subtasks/:id"
+          }
+        }
+      ]
+    },
+    {
+      "name": "tags",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/tags"
+          }
+        },
+        {
+          "name": "Get All",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tags"
+          }
+        },
+        {
+          "name": "Get By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tags/:id"
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/tags/:id"
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/tags/:id"
+          }
+        }
+      ]
+    },
+    {
+      "name": "lists",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/lists"
+          }
+        },
+        {
+          "name": "Get All",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/lists"
+          }
+        },
+        {
+          "name": "Get By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/lists/:id"
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/lists/:id"
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/lists/:id"
+          }
+        }
+      ]
+    },
+    {
+      "name": "devices",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/devices"
+          }
+        },
+        {
+          "name": "Get All",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/devices"
+          }
+        },
+        {
+          "name": "Get By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/devices/:id"
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/devices/:id"
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/devices/:id"
+          }
+        }
+      ]
+    },
+    {
+      "name": "notifications",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/notifications"
+          }
+        },
+        {
+          "name": "Get All",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/notifications"
+          }
+        },
+        {
+          "name": "Get By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/notifications/:id"
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/notifications/:id"
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/notifications/:id"
+          }
+        }
+      ]
+    },
+    {
+      "name": "auditlogs",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/auditlogs"
+          }
+        },
+        {
+          "name": "Get All",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auditlogs"
+          }
+        },
+        {
+          "name": "Get By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auditlogs/:id"
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/auditlogs/:id"
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/auditlogs/:id"
+          }
+        }
+      ]
+    },
+    {
+      "name": "synccursors",
+      "item": [
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/synccursors"
+          }
+        },
+        {
+          "name": "Get All",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/synccursors"
+          }
+        },
+        {
+          "name": "Get By ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/synccursors/:id"
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/synccursors/:id"
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/synccursors/:id"
+          }
+        }
+      ]
+    }  ]
+}
