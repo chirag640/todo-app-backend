@@ -16,8 +16,8 @@ export class User {
   @Prop({ required: true })
   firstName!: string;
 
-  @Prop({ required: true })
-  lastName!: string;
+  @Prop({ required: false, default: '' })
+  lastName?: string;
 
   @Prop({ type: [String], default: ['User'] })
   roles!: string[];

@@ -33,7 +33,8 @@ export class RegisterDto {
   @IsString()
   @MinLength(2)
   @MaxLength(50)
-  lastName!: string;
+  @IsOptional()
+  lastName?: string;
 
   @IsArray()
   @IsString({ each: true })

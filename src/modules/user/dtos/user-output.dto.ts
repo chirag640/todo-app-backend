@@ -2,7 +2,7 @@ export class UserOutputDto {
   id!: string;
   email!: string;
   firstName!: string;
-  lastName!: string;
+  lastName?: string;
   roles!: string[];
   createdAt!: Date;
   updatedAt!: Date;

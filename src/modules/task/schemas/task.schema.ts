@@ -38,6 +38,13 @@ export class Task {
   priority!: string;
 
   @Prop({
+    type: String,
+    required: false,
+    index: true,
+  })
+  category!: string;
+
+  @Prop({
     type: Date,
     required: false,
     index: true,

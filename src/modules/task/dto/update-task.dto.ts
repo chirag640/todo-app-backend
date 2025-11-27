@@ -82,10 +82,32 @@ export class UpdateTaskDto {
     // Handle string "null" from frontend forms
     if (value === 'null' || value === 'undefined' || value === '') return undefined;
     if (!value) return value;
-    return value;
+    // Normalize to capitalize first letter (frontend sends lowercase)
+    const normalized = value.toString().toLowerCase();
+    return normalized.charAt(0).toUpperCase() + normalized.slice(1);
   })
   @IsIn(['Low', 'Medium', 'High', 'Urgent'])
   priority?: string;
+
+  @ApiProperty({
+    description: 'Category or classification',
+    example: 'Work',
+    required: false,
+    minLength: 1,
+    maxLength: 100,
+  })
+  @IsOptional()
+  @Transform(({ value }) => {
+    // Handle string "null" from frontend forms
+    if (value === 'null' || value === 'undefined' || value === '') return undefined;
+    if (!value) return value;
+    const trimmed = value.trim();
+    return sanitizeHtml(trimmed, { allowedTags: [], allowedAttributes: {} });
+  })
+  @IsString()
+  @MinLength(1)
+  @MaxLength(100)
+  category?: string;
 
   @ApiProperty({
     description: 'dueDate',

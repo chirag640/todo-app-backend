@@ -65,7 +65,7 @@ async function bootstrap() {
   // Enable CORS for cross-origin requests
   const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
   app.enableCors({
-    origin: allowedOrigins,
+    origin: allowedOrigins.length > 0 ? allowedOrigins : true, // Allow all origins in development
     credentials: true,
   });
 
@@ -112,13 +112,14 @@ async function bootstrap() {
   setupSwagger(app);
 
   const port = process.env.PORT || 3000;
-  await app.listen(port);
+  // Listen on 0.0.0.0 to accept connections from all network interfaces (required for mobile devices/emulators)
+  await app.listen(port, '0.0.0.0');
 
   // Enable graceful shutdown for containerized environments
   app.enableShutdownHooks();
 
   const logger = app.get(Logger);
-  logger.log(`🚀 Application is running on: http://localhost:${port}`);
+  logger.log(`🚀 Application is running on: http://0.0.0.0:${port}`);
   logger.log(`📚 Swagger documentation available at: http://localhost:${port}/api/docs`);
   logger.log(`❤️  Health check available at: http://localhost:${port}/health`);
 
