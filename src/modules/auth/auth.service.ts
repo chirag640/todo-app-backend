@@ -3,6 +3,7 @@ import {
   UnauthorizedException,
   ConflictException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -10,6 +11,8 @@ import * as bcrypt from 'bcryptjs';
 import { UserRepository } from '../user/user.repository';
 import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';
+import { UpdateProfileDto } from './dtos/update-profile.dto';
+import { ChangePasswordDto } from './dtos/change-password.dto';
 import { UserOutputDto } from '../user/dtos/user-output.dto';
 import { EmailVerificationService } from './email-verification.service';
 
@@ -152,6 +155,76 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
     return this.mapToOutputDto(user);
+  }
+
+  async updateProfile(userId: string, dto: UpdateProfileDto): Promise<UserOutputDto> {
+    // Find user (with password field for verification)
+    const user = await this.userRepository.findOne({ _id: userId });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Check if email is being changed and already exists
+    if (dto.email && dto.email !== user.email) {
+      const existingUser = await this.userRepository.findByEmail(dto.email);
+      if (existingUser) {
+        throw new ConflictException('Email already in use');
+      }
+    }
+
+    // Update user fields
+    const updateData: any = {
+      firstName: dto.firstName,
+    };
+
+    // Only include lastName if provided (allow empty string to clear)
+    if (dto.lastName !== undefined) {
+      updateData.lastName = dto.lastName;
+    }
+
+    // Only update email if provided and different
+    if (dto.email && dto.email !== user.email) {
+      updateData.email = dto.email;
+    }
+
+    // Update user in database
+    const updatedUser = await this.userRepository.update(userId, updateData);
+    if (!updatedUser) {
+      throw new NotFoundException('Failed to update user');
+    }
+
+    return this.mapToOutputDto(updatedUser);
+  }
+
+  async changePassword(userId: string, dto: ChangePasswordDto): Promise<{ message: string }> {
+    // Find user with password field
+    const user = await this.userRepository.findOne({ _id: userId });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Verify current password
+    const isPasswordValid = await bcrypt.compare(dto.currentPassword, user.password);
+    if (!isPasswordValid) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+
+    // Check that new password is different from current
+    const isSamePassword = await bcrypt.compare(dto.newPassword, user.password);
+    if (isSamePassword) {
+      throw new BadRequestException('New password must be different from current password');
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(dto.newPassword, 10);
+
+    // Update password in database
+    await this.userRepository.update(userId, { password: hashedPassword });
+
+    // Optionally: Invalidate all refresh tokens for security
+    // await this.userRepository.updateRefreshToken(userId, null);
+
+    return { message: 'Password changed successfully' };
   }
 
   async logout(userId: string, _refreshToken: string, _accessToken?: string) {
