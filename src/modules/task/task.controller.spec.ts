@@ -81,66 +81,96 @@ describe('TaskController', () => {
 
       service.create.mockResolvedValue(mockTask as any);
 
-      const result = await controller.create(createDto as any);
-
+      const result = await controller.create(createDto as any, { user: { userId: 'test-user-id' } });
       expect(result).toEqual(mockTask);
-      expect(service.create).toHaveBeenCalledWith(createDto);
+      expect(service.create).toHaveBeenCalledWith(createDto, 'test-user-id');
     });
   });
 
   describe('findAll', () => {
-    it('should return paginated tasks', async () => {
-      const mockResult = {
-        items: [mockTask],
+    it('should return an array of tasks', async () => {
+      const expectedOutput = {
+        data: [
+          {
+            id: '507f1f77bcf86cd799439011',
+            title: 'Test Task',
+            description: 'Test Description',
+            status: 'Pending',
+            priority: 'Medium',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ],
         meta: {
+          total: 1,
           page: 1,
           limit: 10,
-          total: 1,
-          totalPages: 1,
+          pages: 1,
         },
       };
 
-      service.findAll.mockResolvedValue(mockResult as any);
+      jest.spyOn(service, 'findAll').mockResolvedValue(expectedOutput as any);
 
-      const result = await controller.findAll(1, 10);
-
-      expect(result).toEqual(mockResult);
-      expect(service.findAll).toHaveBeenCalledWith(1, 10);
+      const result = await controller.findAll({ user: { userId: 'test-user-id' } });
+      expect(result).toEqual(expectedOutput);
+      expect(service.findAll).toHaveBeenCalledWith('test-user-id', undefined, undefined, {
+        search: undefined,
+        priority: undefined,
+        status: undefined,
+        sortBy: undefined,
+        order: undefined,
+        dateFilter: undefined,
+      });
     });
   });
 
   describe('findOne', () => {
-    it('should return a task by id', async () => {
-      service.findOne.mockResolvedValue(mockTask as any);
+    it('should return a single task', async () => {
+      const expectedOutput = {
+        id: '507f1f77bcf86cd799439011',
+        title: 'Test Task',
+        description: 'Test Description',
+        status: 'Pending',
+        priority: 'Medium',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
-      const result = await controller.findOne('507f1f77bcf86cd799439011');
+      jest.spyOn(service, 'findOne').mockResolvedValue(expectedOutput as any);
 
-      expect(result).toEqual(mockTask);
-      expect(service.findOne).toHaveBeenCalledWith('507f1f77bcf86cd799439011');
+      const result = await controller.findOne('507f1f77bcf86cd799439011', { user: { userId: 'test-user-id' } });
+      expect(result).toEqual(expectedOutput);
+      expect(service.findOne).toHaveBeenCalledWith('507f1f77bcf86cd799439011', 'test-user-id');
     });
   });
 
   describe('update', () => {
     it('should update a task', async () => {
-      const updateDto = {};
+      const updateDto = { title: 'Updated Task' };
+      const expectedOutput = {
+        id: '507f1f77bcf86cd799439011',
+        title: 'Updated Task',
+        description: 'Test Description',
+        status: 'Pending',
+        priority: 'Medium',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
 
-      const updatedMock = { ...mockTask, ...updateDto };
-      service.update.mockResolvedValue(updatedMock as any);
+      jest.spyOn(service, 'update').mockResolvedValue(expectedOutput as any);
 
-      const result = await controller.update('507f1f77bcf86cd799439011', updateDto as any);
-
-      expect(result).toEqual(updatedMock);
-      expect(service.update).toHaveBeenCalledWith('507f1f77bcf86cd799439011', updateDto);
+      const result = await controller.update('507f1f77bcf86cd799439011', updateDto as any, { user: { userId: 'test-user-id' } });
+      expect(result).toEqual(expectedOutput);
+      expect(service.update).toHaveBeenCalledWith('507f1f77bcf86cd799439011', updateDto, 'test-user-id');
     });
   });
 
   describe('remove', () => {
     it('should remove a task', async () => {
-      service.remove.mockResolvedValue(undefined);
+      jest.spyOn(service, 'remove').mockResolvedValue(undefined);
 
-      await controller.remove('507f1f77bcf86cd799439011');
-
-      expect(service.remove).toHaveBeenCalledWith('507f1f77bcf86cd799439011');
+      await controller.remove('507f1f77bcf86cd799439011', { user: { userId: 'test-user-id' } });
+      expect(service.remove).toHaveBeenCalledWith('507f1f77bcf86cd799439011', 'test-user-id');
     });
   });
 });

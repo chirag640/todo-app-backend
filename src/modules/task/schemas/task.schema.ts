@@ -14,6 +14,13 @@ export class Task {
 
   @Prop({
     type: String,
+    required: true,
+    index: true,
+  })
+  userId!: string;
+
+  @Prop({
+    type: String,
     required: false,
     index: true,
   })

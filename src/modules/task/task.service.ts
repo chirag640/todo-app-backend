@@ -9,12 +9,14 @@ import { PaginatedResponse, createPaginatedResponse } from '../../pagination.dto
 export class TaskService {
   constructor(private readonly taskRepository: TaskRepository) {}
 
-  async create(dto: CreateTaskDto): Promise<TaskOutputDto> {
-    const created = await this.taskRepository.create(dto);
+  async create(dto: CreateTaskDto, userId: string): Promise<TaskOutputDto> {
+    const taskData = { ...dto, userId };
+    const created = await this.taskRepository.create(taskData);
     return this.mapToOutput(created);
   }
 
   async findAll(
+    userId: string,
     page?: number,
     limit?: number,
     filters?: {
@@ -31,8 +33,8 @@ export class TaskService {
     const itemsPerPage = Math.min(100, Math.max(1, Number(limit) || 10));
     const skip = (currentPage - 1) * itemsPerPage;
 
-    // Build filter query
-    const query: any = { isDeleted: { $ne: true } };
+    // Build filter query - Scope by userId
+    const query: any = { userId, isDeleted: { $ne: true } };
 
     // Search in title and description (case-insensitive, partial match)
     if (filters?.search) {
@@ -104,15 +106,21 @@ export class TaskService {
     return createPaginatedResponse(data, total, currentPage, itemsPerPage);
   }
 
-  async findOne(id: string): Promise<TaskOutputDto> {
+  async findOne(id: string, userId: string): Promise<TaskOutputDto> {
     const item = await this.taskRepository.findById(id);
-    if (!item) {
+    if (!item || item.userId !== userId) {
       throw new NotFoundException(`Task with ID ${id} not found`);
     }
     return this.mapToOutput(item);
   }
 
-  async update(id: string, dto: UpdateTaskDto): Promise<TaskOutputDto> {
+  async update(id: string, dto: UpdateTaskDto, userId: string): Promise<TaskOutputDto> {
+    // Check ownership first
+    const existing = await this.taskRepository.findById(id);
+    if (!existing || existing.userId !== userId) {
+      throw new NotFoundException(`Task with ID ${id} not found`);
+    }
+
     const updated = await this.taskRepository.update(id, dto);
     if (!updated) {
       throw new NotFoundException(`Task with ID ${id} not found`);
@@ -120,7 +128,13 @@ export class TaskService {
     return this.mapToOutput(updated);
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, userId: string): Promise<void> {
+    // Check ownership first
+    const existing = await this.taskRepository.findById(id);
+    if (!existing || existing.userId !== userId) {
+      throw new NotFoundException(`Task with ID ${id} not found`);
+    }
+
     const deleted = await this.taskRepository.delete(id);
     if (!deleted) {
       throw new NotFoundException(`Task with ID ${id} not found`);
