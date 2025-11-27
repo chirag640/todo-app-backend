@@ -16,7 +16,7 @@ import { ThrottlerGuard } from '@nestjs/throttler';
           throttlers: [
             {
               ttl: configService.get<number>('THROTTLE_TTL') || 60000, // Time window in milliseconds (default: 1 minute)
-              limit: configService.get<number>('THROTTLE_LIMIT') || 10, // Max requests per window (default: 10)
+              limit: configService.get<number>('THROTTLE_LIMIT') || 100, // Max requests per window (default: 100)
             },
           ],
         };
