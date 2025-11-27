@@ -41,7 +41,6 @@ export class UpdateTaskDto {
     description: 'Description or content',
     example: 'This is a sample description text',
     required: false,
-    minLength: 10,
     maxLength: 5000,
   })
   @IsOptional()
@@ -50,10 +49,11 @@ export class UpdateTaskDto {
     if (value === 'null' || value === 'undefined' || value === '') return undefined;
     if (!value) return value;
     const trimmed = value.trim();
+    // Return undefined for empty strings after trimming
+    if (trimmed === '') return undefined;
     return sanitizeHtml(trimmed, { allowedTags: [], allowedAttributes: {} });
   })
   @IsString()
-  @MinLength(10)
   @MaxLength(5000)
   description?: string;
 

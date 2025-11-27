@@ -14,15 +14,90 @@ export class TaskService {
     return this.mapToOutput(created);
   }
 
-  async findAll(page?: number, limit?: number): Promise<PaginatedResponse<TaskOutputDto>> {
+  async findAll(
+    page?: number,
+    limit?: number,
+    filters?: {
+      search?: string;
+      priority?: string;
+      status?: string;
+      sortBy?: string;
+      order?: string;
+      dateFilter?: string;
+    },
+  ): Promise<PaginatedResponse<TaskOutputDto>> {
     // Pagination defaults: page 1, limit 10, max 100
     const currentPage = Math.max(1, Number(page) || 1);
     const itemsPerPage = Math.min(100, Math.max(1, Number(limit) || 10));
     const skip = (currentPage - 1) * itemsPerPage;
 
+    // Build filter query
+    const query: any = { isDeleted: { $ne: true } };
+
+    // Search in title and description (case-insensitive, partial match)
+    if (filters?.search) {
+      query.$or = [
+        { title: { $regex: filters.search, $options: 'i' } },
+        { description: { $regex: filters.search, $options: 'i' } },
+      ];
+    }
+
+    // Filter by priority (support multiple: "High,Medium")
+    if (filters?.priority) {
+      const priorities = filters.priority.split(',').map((p) => p.trim());
+      query.priority = { $in: priorities };
+    }
+
+    // Filter by status
+    if (filters?.status) {
+      query.status = filters.status;
+    }
+
+    // Date filter
+    if (filters?.dateFilter) {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const weekEnd = new Date(today);
+      weekEnd.setDate(weekEnd.getDate() + 7);
+
+      switch (filters.dateFilter) {
+        case 'today':
+          query.dueDate = { $gte: today, $lt: tomorrow };
+          break;
+        case 'week':
+          query.dueDate = { $gte: today, $lt: weekEnd };
+          break;
+        case 'overdue':
+          query.dueDate = { $lt: today };
+          query.status = { $ne: 'Completed' };
+          break;
+        case 'nodate':
+          query.dueDate = null;
+          break;
+      }
+    }
+
+    // Sorting
+    let sort: any = {};
+    const sortField = filters?.sortBy || 'createdAt';
+    const sortOrder = filters?.order === 'asc' ? 1 : -1;
+
+    if (sortField === 'priority') {
+      // Priority sort: Urgent > High > Medium > Low (desc) or Low > Medium > High > Urgent (asc)
+      sort = { priority: sortOrder };
+    } else if (sortField === 'dueDate') {
+      // Due date sort (nulls last)
+      sort = { dueDate: sortOrder };
+    } else {
+      // Default: createdAt (newest first)
+      sort = { createdAt: sortOrder };
+    }
+
     const [items, total] = await Promise.all([
-      this.taskRepository.findAll(skip, itemsPerPage),
-      this.taskRepository.count(),
+      this.taskRepository.findWithFilters(query, sort, skip, itemsPerPage),
+      this.taskRepository.countWithFilters(query),
     ]);
 
     const data = items.map((item) => this.mapToOutput(item));

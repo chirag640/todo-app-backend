@@ -49,6 +49,16 @@ export class TaskRepository extends BaseRepository<TaskDocument> {
     return this.taskModel.countDocuments().exec();
   }
 
+  async findWithFilters(query: any, sort: any, skip: number, limit: number): Promise<Task[]> {
+    return this.taskModel.find(query).sort(sort).skip(skip).limit(limit).lean().exec() as Promise<
+      Task[]
+    >;
+  }
+
+  async countWithFilters(query: any): Promise<number> {
+    return this.taskModel.countDocuments(query).exec();
+  }
+
   /**
    * Relationship Management Methods
    */

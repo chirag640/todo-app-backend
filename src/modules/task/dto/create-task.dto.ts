@@ -39,7 +39,6 @@ export class CreateTaskDto {
     description: 'Description or content',
     example: 'This is a sample description text',
     required: false,
-    minLength: 10,
     maxLength: 5000,
   })
   @IsOptional()
@@ -48,11 +47,12 @@ export class CreateTaskDto {
     if (value === 'null' || value === 'undefined' || value === '') return undefined;
     if (!value) return value;
     const trimmed = value.trim();
+    // Return undefined for empty strings after trimming
+    if (trimmed === '') return undefined;
     // Sanitize HTML to prevent XSS attacks
     return sanitizeHtml(trimmed, { allowedTags: [], allowedAttributes: {} });
   })
   @IsString()
-  @MinLength(10)
   @MaxLength(5000)
   description?: string;
 

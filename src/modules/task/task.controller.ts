@@ -26,8 +26,24 @@ export class TaskController {
   }
 
   @Get()
-  findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
-    return this.taskService.findAll(page, limit);
+  findAll(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('search') search?: string,
+    @Query('priority') priority?: string,
+    @Query('status') status?: string,
+    @Query('sortBy') sortBy?: string,
+    @Query('order') order?: string,
+    @Query('dateFilter') dateFilter?: string,
+  ) {
+    return this.taskService.findAll(page, limit, {
+      search,
+      priority,
+      status,
+      sortBy,
+      order,
+      dateFilter,
+    });
   }
 
   @Get(':id')
