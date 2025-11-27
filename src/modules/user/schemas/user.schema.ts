@@ -64,6 +64,12 @@ export class User {
     required: false,
   })
   lastSeenAt!: Date;
+
+  @Prop({
+    type: String,
+    required: false,
+  })
+  fcmToken?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

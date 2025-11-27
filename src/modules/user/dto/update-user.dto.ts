@@ -174,4 +174,13 @@ export class UpdateUserDto {
   @IsISO8601({ strict: false })
   @Type(() => Date)
   lastSeenAt?: Date;
+
+  @ApiProperty({
+    description: 'FCM token for push notifications',
+    example: 'dGhpcyBpcyBh...',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  fcmToken?: string;
 }
