@@ -63,10 +63,15 @@ async function bootstrap() {
   }
 
   // Enable CORS for cross-origin requests
-  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
+  // For mobile apps (Flutter APK), allow all origins since CORS is primarily a browser security feature
+  // Mobile apps make direct HTTP requests without browser CORS restrictions
+  const corsOrigin = process.env.CORS_ORIGIN;
+  
   app.enableCors({
-    origin: allowedOrigins.length > 0 ? allowedOrigins : true, // Allow all origins in development
+    origin: corsOrigin === '*' ? true : (corsOrigin?.split(',') || true),
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   });
 
   // Security: Configurable request body size limits to prevent DoS attacks

@@ -19,7 +19,28 @@ export class FcmService {
         return;
       }
 
-      // Try to initialize with service account from environment
+      // Method 1: Use individual environment variables (Recommended for Vercel)
+      const projectId = process.env.FIREBASE_PROJECT_ID;
+      const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+      const privateKey = process.env.FIREBASE_PRIVATE_KEY;
+
+      if (projectId && clientEmail && privateKey) {
+        // Replace escaped newlines in private key
+        const formattedPrivateKey = privateKey.replace(/\\n/g, '\n');
+        
+        admin.initializeApp({
+          credential: admin.credential.cert({
+            projectId,
+            clientEmail,
+            privateKey: formattedPrivateKey,
+          }),
+        });
+        this.isInitialized = true;
+        this.logger.log('Firebase Admin initialized with environment variables');
+        return;
+      }
+
+      // Method 2: Use service account file path (Local development)
       const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
       
       if (serviceAccountPath) {
@@ -28,15 +49,16 @@ export class FcmService {
           credential: admin.credential.cert(serviceAccount),
         });
         this.isInitialized = true;
-        this.logger.log('Firebase Admin initialized with service account');
-      } else {
-        // Try to initialize with default credentials (for cloud environments)
-        admin.initializeApp({
-          credential: admin.credential.applicationDefault(),
-        });
-        this.isInitialized = true;
-        this.logger.log('Firebase Admin initialized with default credentials');
+        this.logger.log('Firebase Admin initialized with service account file');
+        return;
       }
+
+      // Method 3: Use default application credentials (GCP)
+      admin.initializeApp({
+        credential: admin.credential.applicationDefault(),
+      });
+      this.isInitialized = true;
+      this.logger.log('Firebase Admin initialized with default credentials');
     } catch (error) {
       this.logger.warn(
         'Firebase Admin initialization failed. Push notifications will not work.',
