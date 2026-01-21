@@ -150,9 +150,28 @@ export class Task {
 
 export const TaskSchema = SchemaFactory.createForClass(Task);
 
-// Compound indexes for common query patterns
-// Index for sorting by creation date (most common query pattern)
-TaskSchema.index({ createdAt: -1 });
+// =====================================================
+// COMPOUND INDEXES FOR OPTIMIZED QUERY PERFORMANCE
+// =====================================================
 
-// Text search index for common search queries
+// Primary query pattern: Get user's tasks filtered by status and priority
+// Covers: findAll with status/priority filters, sorted by createdAt
+TaskSchema.index({ userId: 1, status: 1, priority: 1, createdAt: -1 });
+
+// Date-based queries: Get user's tasks filtered by dueDate range
+// Covers: today, week, overdue date filters
+TaskSchema.index({ userId: 1, dueDate: 1, status: 1 });
+
+// Default listing: Get user's non-deleted tasks, newest first
+// Covers: basic list view with isDeleted filter
+TaskSchema.index({ userId: 1, isDeleted: 1, createdAt: -1 });
+
+// Priority sorting: Sort user's tasks by priority level
+TaskSchema.index({ userId: 1, priority: 1, createdAt: -1 });
+
+// Due date sorting: Sort user's tasks by due date
+TaskSchema.index({ userId: 1, dueDate: -1 });
+
+// Text search index for title/description search
 TaskSchema.index({ title: 'text', description: 'text' });
+

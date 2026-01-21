@@ -36,12 +36,20 @@ export class TaskService {
     // Build filter query - Scope by userId
     const query: any = { userId, isDeleted: { $ne: true } };
 
-    // Search in title and description (case-insensitive, partial match)
-    if (filters?.search) {
-      query.$or = [
-        { title: { $regex: filters.search, $options: 'i' } },
-        { description: { $regex: filters.search, $options: 'i' } },
-      ];
+    // Search in title and description using text index (much faster than regex)
+    if (filters?.search && filters.search.trim().length > 0) {
+      const searchTerm = filters.search.trim();
+      // Use text index for longer searches (3+ chars), regex for short queries
+      if (searchTerm.length >= 3) {
+        // Use MongoDB text search with the text index
+        query.$text = { $search: searchTerm };
+      } else {
+        // Fallback to regex for very short queries (text search requires 3+ chars)
+        query.$or = [
+          { title: { $regex: searchTerm, $options: 'i' } },
+          { description: { $regex: searchTerm, $options: 'i' } },
+        ];
+      }
     }
 
     // Filter by priority (support multiple: "High,Medium")
